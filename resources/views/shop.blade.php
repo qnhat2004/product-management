@@ -7,5 +7,12 @@
 </head>
 <body>
     @extends('app')
+
+    @section('custom-css')
+    @endsection
+    
+    @section('content')
+        <h1>hi</h1>
+    @endsection
 </body>
 </html>

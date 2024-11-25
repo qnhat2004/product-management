@@ -34,33 +34,41 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        // //
-        // $request->validate([
-        //     'MaTheLoai' => 'required',
-        //     'TenDoAn' => 'required',
-        //     'TrangThai' => 'required',
-        // ]);
-        // // $doan = DoAn::create($request->all());
-        // $doan = new Product();
-        // $doan->MaTheLoai = $request->input('MaTheLoai');
-        // $doan->TenDoAn = $request->input('TenDoAn');
-        // $doan->TrangThai = $request->input('TrangThai');
+        // Validate the request data
+        $validatedData = $request->validate([
+            'title' => 'required|string|max:255',
+            'price' => 'required|numeric',
+            'description' => 'required|string',
+           
+            'category' => 'required|string|max:255',
+            'image_url' => 'required_if:image_option,url|url',
+            'image_file' => 'required_if:image_option,upload|file',
+            'rating_rate' => 'required|numeric',
+            'rating_count' => 'required|numeric',
+        ]);
 
-        // if ($request->hasFile('Anh')) {
-        //     $image = $request->file('Anh');
-        //     $imageName = time() . '.' . $image->getClientOriginalExtension();
-        //     $image->move(public_path('Anh'), $imageName);
-        //     $doan->Anh = 'Anh/' . $imageName;
-        // }
-        // $doan->save();
-        // return redirect()->route('doans.index')->with('mes', 'Thêm mới đồ ăn thành công.');
-        $product = Product::create($request->all());
-        // $tmp = $request->all();
-        // foreach ($tmp as $key => $value) {
-        //     echo $key .' '. $value .'<br>';
-        // }
-        // $product->save();
-        // return redirect('')->with('success','');
+        // Create a new product
+        $product = new Product();
+        $product->title = $validatedData['title'];
+        $product->price = $validatedData['price'];
+        $product->description = $validatedData['description'];
+        $product->category = $validatedData['category'];
+
+        if ($request['image_option'] === 'url') {
+            $product->image = $validatedData['image_url'];
+        } else {
+            $fileName = time() . '_' . $request->file('image_file')->getClientOriginalName();
+            $filePath = $request->file('image_file')->storeAs('public/images', $fileName);
+            $product->image = 'storage/images/' . $fileName;
+        }
+
+        $product->rating_rate = $validatedData['rating_rate'];
+        $product->rating_count = $validatedData['rating_count'];
+          
+        $product->save();
+
+        // Redirect or return response
+        return redirect()->route('products.index')->with('success', 'Product added successfully.');
     }
 
     /**

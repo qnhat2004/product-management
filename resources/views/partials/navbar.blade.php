@@ -12,6 +12,7 @@
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
+            white-space: nowrap;
         }
 
         .nav-link:hover {
@@ -112,6 +113,18 @@
                             0
                         </span>
                     </button>
+                    @if(Auth::check())
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="nav-link text-dark fw-medium">{{ Auth::user()->name }}</span>
+                            <a href="#" class=""
+                               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
+                            <form id="logout-form" action="#" method="POST" class="d-none">
+                                @csrf
+                            </form>
+                        </div>
+                    @else
+                        <a href="#" class="">Login</a>
+                    @endif
                 </div>
             </div>
         </nav>
